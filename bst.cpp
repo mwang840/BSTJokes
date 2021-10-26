@@ -29,14 +29,38 @@ void bst::clearTree() { //clears out an old tree
 	}
 }
 
-//Inserts a node in the bst if the root is not null. Otherwise, compare the nodes data and check. Returns the status of inserting.
+//Inserts a node in the bst if the root is not null. Otherwise, compare the nodes data and check. Returns the status of inserting. Recursion is a big player in this function.
 bool bst::insert(string f, string l, int n, string j){
-	bool inserted;
+	bstNode *temp = new bstNode();
 	if(root == NULL){
-		root = new bstNode(f, l, n, j);
-		
+		temp = new bstNode(f, l, n, j);
+
 	}
-	return inserted;
+	else{
+		if(temp->person->last < l){
+			if(temp->left == NULL){
+				temp->left = new bstNode(f, l,n,j);
+				temp->parent = temp;
+				return true;
+			}
+			else{
+				insert(f,l,n,j);
+			}
+		}
+		else if(temp->person->last > l){
+			if(temp->right == NULL){
+				temp->right = new bstNode(f, l, n, j);
+				temp->parent = temp;
+				return true;
+			}
+			else{
+				insert(f, l, n, j);
+			}
+		}
+		else{
+			return false;
+		}
+	}
 }
 
 void bst::clearTree(bstNode *tmp) {
