@@ -63,7 +63,40 @@ bool bst::insert(string f, string l, int n, string j){
 	}
 }
 
-void bst::clearTree(bstNode *tmp) {
+//Find the node which has the first and last name is in the tree. It will return the node of the matching first and last name otherwise, return null.
+bstNode bst::*find(string l, string n){
+	bstNode *temp = new bstNode();
+	if(root == NULL){
+		return NULL;
+	}
+	else{
+		if(temp->person->last == l){
+			if(temp->person->first == l){
+				return temp;
+			}
+			else{
+				find(l, n);
+			}
+		}
+		else{
+			if(temp->person->last < l){
+				temp = temp->left;
+				find(l, n);
+			}
+			if(temp->person->last > l){
+				temp = temp->right;
+				find(l,n);
+			}
+		}
+		else{
+			return NULL;
+		}
+
+	}
+
+}
+
+void bst::clearTree(bstNode *tmp) { //Recursive call in which the nodes are deleted from the tree
 	if (tmp == NULL) {
 		return;
 	}
@@ -84,8 +117,17 @@ void bst::printTreeIO() { // Just the start – you must write the recursive ver
 	}
 }
 
-void bst::printTreeIO(bstNode *n){ //Recursive version
-	
+void bst::printTreeIO(bstNode *n){ //Recursive version which prints out the nodes in order starting from the node input
+	if(n == NULL){
+		return;
+	}
+		//Start from the left child of root until the left==NULL
+		printTreeIO(n->left);
+		//Prints out the information of the node
+		cout<<n->person<< " "<<endl;
+		//Start from the right child of root until the right==NULL
+		printTreeIO(n->right);
+
 }
 
 
@@ -93,7 +135,7 @@ void clearTree(bstNode *tmp){ // Recursive version which clears the node off the
 
 }
 
-void bst::printTreePre() {
+void bst::printTreePre() { //Prints out the tree in preorder calls recursive function if root != NULL
 	if (root == NULL ) {
 		cout << "Empty Tree" << endl;
 	}
@@ -103,8 +145,18 @@ void bst::printTreePre() {
 	}
 }
 
+void bst::printTreePre(bstNode *n){//Recursive version which prints out the nodes in order starting from the node input(root) and going down by node class order
+	if(n == NULL){
+		return;
+	}
+	cout<<n->person<< " "<<endl;
+	//Start from the left child of root until the left==NULL
+	printTreePre(n->left);
+	//Start from the right child of root until the right==NULL
+	printTreePre(n->right);
+}
 
-void bst::printTreePost() {
+void bst::printTreePost() {//Recursive version which prints out the nodes in order starting from the child nodes
 	if (root == NULL ) {
 		cout << "Empty Tree" << endl;
 	}
