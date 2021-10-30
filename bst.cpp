@@ -124,14 +124,9 @@ void bst::printTreeIO(bstNode *n){ //Recursive version which prints out the node
 		//Start from the left child of root until the left==NULL
 		printTreeIO(n->left);
 		//Prints out the information of the node
-		cout<<n->person<< " "<<endl;
+		n->printNode();
 		//Start from the right child of root until the right==NULL
 		printTreeIO(n->right);
-
-}
-
-
-void clearTree(bstNode *tmp){ // Recursive version which clears the node off the tree
 
 }
 
@@ -149,7 +144,7 @@ void bst::printTreePre(bstNode *n){//Recursive version which prints out the node
 	if(n == NULL){
 		return;
 	}
-	cout<<n->person<< " "<<endl;
+	n->printNode();
 	//Start from the left child of root until the left==NULL
 	printTreePre(n->left);
 	//Start from the right child of root until the right==NULL
