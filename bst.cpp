@@ -192,14 +192,29 @@ bstNode *bst::remove(string l, string f){
 		if(root->person->first == f){
 			temp = root;
 		}
+		//Case one: node has no children
 		if(root->left == NULL and root->right == NULL){
-			temp = NULL;
+			temp = root;
+			delete root;
+			setHeight(temp);
 		}
+		//Case two: node has one child
 		else if(root->left == NULL){
 			temp = root->right;
+			delete root;
+			setHeight(temp);
 		}
 		else if(root->right == NULL){
 			temp = root->left;
+			delete root;
+			setHeight(temp);
+		}
+		//Case three: node has two children
+		else{
+			root->person->last = temp;
+			temp += root->person->first;
+			root->right = remove(root->person->last,root->person->first);
+			setHeight(temp);
 		}
 	}
 	return temp;
