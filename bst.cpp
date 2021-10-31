@@ -34,23 +34,25 @@ bool bst::insert(string f, string l, int n, string j){
 	bstNode *temp = new bstNode();
 	if(root == NULL){
 		temp = new bstNode(f, l, n, j);
-
 	}
 	else{
 		if(temp->person->last < l){
 			if(temp->left == NULL){
 				temp->left = new bstNode(f, l,n,j);
-				temp->parent = temp;
+				temp->left->parent = temp;
+				setHeight(temp);
 				return true;
 			}
 			else{
 				insert(f,l,n,j);
+
 			}
 		}
 		else if(temp->person->last > l){
 			if(temp->right == NULL){
 				temp->right = new bstNode(f, l, n, j);
-				temp->parent = temp;
+				temp->right->parent = temp;
+				setHeight(temp);
 				return true;
 			}
 			else{
@@ -64,7 +66,7 @@ bool bst::insert(string f, string l, int n, string j){
 }
 
 //Find the node which has the first and last name is in the tree. It will return the node of the matching first and last name otherwise, return null.
-bstNode bst::*find(string l, string n){
+bstNode *bst::find(string l, string n){
 	bstNode *temp = new bstNode();
 	if(root == NULL){
 		return NULL;
@@ -87,9 +89,6 @@ bstNode bst::*find(string l, string n){
 				temp = temp->right;
 				find(l,n);
 			}
-		}
-		else{
-			return NULL;
 		}
 
 	}
@@ -123,7 +122,7 @@ void bst::printTreeIO(bstNode *n){ //Recursive version which prints out the node
 	}
 		//Start from the left child of root until the left==NULL
 		printTreeIO(n->left);
-		//Prints out the information of the node
+		//Prints out the information of the student node
 		n->printNode();
 		//Start from the right child of root until the right==NULL
 		printTreeIO(n->right);
@@ -144,6 +143,7 @@ void bst::printTreePre(bstNode *n){//Recursive version which prints out the node
 	if(n == NULL){
 		return;
 	}
+	//Prints out the information of the student node
 	n->printNode();
 	//Start from the left child of root until the left==NULL
 	printTreePre(n->left);
@@ -160,3 +160,115 @@ void bst::printTreePost() {//Recursive version which prints out the nodes in ord
 		printTreePost(root);
 	}
 }
+
+void bst::printTreePost(bstNode *n){//Recursive version which prints out the nodes from the bottom
+	cout<<"Testing printTreePost";
+	if(n == NULL){
+		return;
+	}
+	//Start from the left child of root until the left==NULL
+	printTreePost(n->left);
+	//Start from the right child of root until the right==NULL
+	printTreePost(n->right);
+	//Prints out the information of the student node
+	n->printNode();
+}
+
+//Removes the node off the tree, if the root is NULL, NULL will be returned.
+bstNode *bst::remove(string l, string f){
+	bstNode *temp = new bstNode();
+	if(root == NULL){
+		return NULL;
+	}
+	else if(root->person->last > l){
+		root->left = remove(l,f);
+		setHeight(temp);
+	}
+	else if(root->person->last < l){
+		root->right = remove(l,f);
+		setHeight(temp);
+	}
+	else if(root->person->last == l){
+		if(root->person->first == f){
+			temp = root;
+		}
+		if(root->left == NULL and root->right == NULL){
+			temp = NULL;
+		}
+		else if(root->left == NULL){
+			temp = root->right;
+		}
+		else if(root->right == NULL){
+			temp = root->left;
+		}
+	}
+	return temp;
+}
+
+//Removes the node that only has no children. Return the node which is being removed if the root is NULL, NULL will be returned.
+ bstNode *bst::removeNoKids(bstNode *tmp){
+	 bstNode *temp = tmp;
+	 //Base case here
+	 if(root == NULL){
+		 return root;
+	 }
+	 if(root->left == NULL && root->right == NULL){
+		 temp = NULL;
+	 }
+	 else if(root->left == NULL){
+		 temp = root ->right;
+		 delete tmp;
+	 }
+	 else if(root->right == NULL){
+		 temp = root->left;
+		 delete tmp;
+	 }
+	 //Calls set height after deletion
+	 bstNode *curr = setHeight(tmp);
+	 root->person = curr->person;
+	 
+	 root->right = removeNoKids(root->right);
+	 return temp;
+ }
+
+//Removes the node that only has one child. Return the node which is being removed if the root is NULL, NULL will be returned.
+bstNode *bst::removeOneKid(bstNode *tmp, bool leftFlag){
+	bstNode  *temp = tmp;
+	//Base case here
+	if(root == NULL){
+		return root;
+	}
+	if(root->left == NULL){
+		temp = root->right;
+		leftFlag = false;
+		delete tmp;
+	}
+	else if(root->right == NULL){
+		temp = root->left;
+		leftFlag = true;
+		delete tmp;
+	}
+	 bstNode *curr = setHeight(tmp);
+		 root->person = curr->person;
+		 
+		 root->right = removeOneKid(root->right, leftFlag);
+	
+	
+	return temp;
+}
+
+//Sets the height of the nodes in the tree
+void bst::setHeight(bstNode *n){
+	int height = 0;
+	
+	if(root == NULL){
+		height = 0;
+	}
+	else{
+		height++;
+	}
+
+
+}
+
+
