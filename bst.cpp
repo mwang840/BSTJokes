@@ -195,6 +195,7 @@ bstNode *bst::minValNode(bstNode *n){
 //Removes the node off the tree, if the root is NULL, NULL will be returned.
 bstNode *bst::remove(string l, string f){
 	bstNode *temp = new bstNode();
+	bstNode *code = temp;
 	bool flag = true;
 	if(root == NULL){
 		temp = NULL;
@@ -212,11 +213,11 @@ bstNode *bst::remove(string l, string f){
 			temp = root;
 		}
 		//Case one: node has no children
-
 			removeNoKids(temp);
 		//Case two: node has one child
 			removeOneKid(temp, flag);
 		//Case three: node has two children
+			code->person = temp->person;
 			temp = minValNode(root->right);
 			root->right = remove(root->right->person->last, root->right->person->first);
 	}
@@ -226,25 +227,9 @@ bstNode *bst::remove(string l, string f){
 //Removes the node that only has no children. Return the node which is being removed if the root is NULL, NULL will be returned.
  bstNode *bst::removeNoKids(bstNode *tmp){
 	 bstNode *temp = tmp;
-	 //Base case here
-	 if(tmp == NULL){
-		 temp = NULL;
-	 }
-	 if(tmp->left == NULL && tmp->right == NULL){
-		 temp = NULL;
-	 }
-	 else if(tmp->left == NULL){
-		 temp = root ->right;
-		 delete tmp;
-	 }
-	 else if(root->right == NULL){
-		 temp = root->left;
-		 delete tmp;
-	 }
-	 //Calls set height after deletion
-	 setHeight(temp);
-	 root->right = removeNoKids(root->right);
-	 return temp;
+	  delete tmp;
+	  setHeight(temp->parent);
+	  return temp;
  }
 
 //Removes the node that only has one child. Return the node which is being removed if the root is NULL, NULL will be returned.
@@ -270,17 +255,17 @@ bstNode *bst::removeOneKid(bstNode *tmp, bool leftFlag){
 
 //Sets the height of the nodes in the tree. This one is a hard one since it has to account for the cases recursively.
 void bst::setHeight(bstNode *n){
-	int height = 0;
+	n->height = 1;
 	//Base case
 	if(n->parent == NULL){
-		height+=1;
+		n->height+=1;
 	}
 	else if(n->left == NULL and n->right == NULL){
-		height = 1;
+		n->height = 1;
 		setHeight(n->parent);
 	}
 	else{
-		height+=1;
+		n->height+=1;
 		setHeight(n->parent);
 	}
 }
