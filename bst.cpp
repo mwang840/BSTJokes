@@ -31,49 +31,77 @@ void bst::clearTree() { //clears out an old tree
 
 //Inserts a node in the bst if the root is not null. Otherwise, compare the nodes data and check. Returns the status of inserting. Recursion is a big player in this function.
 bool bst::insert(string f, string l, int n, string j){
-	bstNode *temp = new bstNode();
+	bstNode *temp = root;
 	if(root == NULL){
-		temp = new bstNode(f, l, n, j);
+		root = new bstNode(f, l, n, j);
+		return true;
 	}
 	else{
-		if(temp->person->last < l){
-			if(temp->left == NULL){
-				temp->left = new bstNode(f, l,n,j);
-				temp->left->parent = temp;
-				setHeight(temp);
-				return true;
+		while(temp->person->last != l){
+			 if(temp->person->last > l){
+				if(temp->left == NULL){
+					temp->left = new bstNode(f, l, n, j);
+					temp->left->parent = temp;
+					setHeight(temp);
+					return true;
+					}
+				else{
+					temp = temp->left;
+				}
 			}
+			else if(temp->person->last < l){
+				 if(temp->right == NULL){
+					 temp->right = new bstNode(f,l,n,j);
+					 temp->right->parent = temp;
+					 setHeight(temp);
+					 return true;
+				 }
+				 else{
+					 temp = temp->right;
+				 }
+			 }
 			else{
-				insert(f,l,n,j);
-
+				break;
 			}
-		}
-		else if(temp->person->last > l){
-			if(temp->right == NULL){
-				temp->right = new bstNode(f, l, n, j);
-				temp->right->parent = temp;
-				setHeight(temp);
-				return true;
-			}
-			else{
-				insert(f, l, n, j);
-			}
-		}
-		else{
-			return false;
 		}
 	}
+	return false;
 }
 
 //Find the node which has the first and last name is in the tree. It will return the node of the matching first and last name otherwise, return null.
 bstNode *bst::find(string l, string n){
-	bstNode *temp = new bstNode();
+	bstNode *temp = root;
 	if(root == NULL){
 		return NULL;
 	}
 	else{
+		while(temp != NULL && temp->person->last != l){
+			if(temp->person->last > l){
+				if(temp->person->last == l && temp->person->first == n){
+					return temp;
+				}
+				else{
+					temp = temp->left;
+				}
+			}
+			else{
+				if(temp->person->last == l && temp->person->first == n){
+					return temp;
+				}
+				else{
+					temp = temp->right;
+				}
+			}
+		}
 		if(temp->person->last == l){
-			if(temp->person->first == l){
+			temp->printNode();
+			return temp;
+		}
+		else{
+			return NULL;
+		}
+		/*if(temp->person->last == l){
+			if(temp->person->first == n){
 				return temp;
 			}
 			else{
@@ -82,14 +110,21 @@ bstNode *bst::find(string l, string n){
 		}
 		else{
 			if(temp->person->last < l){
-				temp = temp->left;
-				find(l, n);
+				if(temp->right == NULL){
+			    temp->right;
+				temp->right->parent = temp;
+				}
+				else{
+					find(l, n);
+				}
+
 			}
 			if(temp->person->last > l){
 				temp = temp->right;
 				find(l,n);
 			}
 		}
+		*/
 
 	}
 
@@ -211,8 +246,9 @@ bstNode *bst::remove(string l, string f){
 		}
 		//Case three: node has two children
 		else{
-			root->person->last = temp;
+			/*root->person->last = temp;
 			temp += root->person->first;
+			*/
 			root->right = remove(root->person->last,root->person->first);
 			setHeight(temp);
 		}
@@ -224,13 +260,13 @@ bstNode *bst::remove(string l, string f){
  bstNode *bst::removeNoKids(bstNode *tmp){
 	 bstNode *temp = tmp;
 	 //Base case here
-	 if(root == NULL){
-		 return root;
-	 }
-	 if(root->left == NULL && root->right == NULL){
+	 if(tmp == NULL){
 		 temp = NULL;
 	 }
-	 else if(root->left == NULL){
+	 if(tmp->left == NULL && tmp->right == NULL){
+		 temp = NULL;
+	 }
+	 else if(tmp->left == NULL){
 		 temp = root ->right;
 		 delete tmp;
 	 }
@@ -239,9 +275,7 @@ bstNode *bst::remove(string l, string f){
 		 delete tmp;
 	 }
 	 //Calls set height after deletion
-	 bstNode *curr = setHeight(tmp);
-	 root->person = curr->person;
-	 
+	 setHeight(temp);
 	 root->right = removeNoKids(root->right);
 	 return temp;
  }
@@ -250,40 +284,38 @@ bstNode *bst::remove(string l, string f){
 bstNode *bst::removeOneKid(bstNode *tmp, bool leftFlag){
 	bstNode  *temp = tmp;
 	//Base case here
-	if(root == NULL){
-		return root;
+	if(tmp == NULL){
+		return tmp;
 	}
-	if(root->left == NULL){
-		temp = root->right;
+	if(tmp->left == NULL){
+		temp = tmp;
 		leftFlag = false;
 		delete tmp;
 	}
-	else if(root->right == NULL){
-		temp = root->left;
+	else if(tmp->right == NULL){
+		temp = tmp;
 		leftFlag = true;
 		delete tmp;
 	}
-	 bstNode *curr = setHeight(tmp);
-		 root->person = curr->person;
-		 
-		 root->right = removeOneKid(root->right, leftFlag);
-	
-	
+	tmp->right = removeOneKid(tmp->right, leftFlag);
 	return temp;
 }
 
-//Sets the height of the nodes in the tree
+//Sets the height of the nodes in the tree. This one is a hard one since it has to account for the cases recursively.
 void bst::setHeight(bstNode *n){
 	int height = 0;
-	
-	if(root == NULL){
-		height = 0;
+	//Base case
+	if(n->parent == NULL){
+		height+=1;
+	}
+	else if(n->left == NULL and n->right == NULL){
+		height = 1;
+		setHeight(n->parent);
 	}
 	else{
-		height++;
+		height+=1;
+		setHeight(n->parent);
 	}
-
-
 }
 
 
