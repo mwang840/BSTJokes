@@ -100,32 +100,6 @@ bstNode *bst::find(string l, string n){
 		else{
 			return NULL;
 		}
-		/*if(temp->person->last == l){
-			if(temp->person->first == n){
-				return temp;
-			}
-			else{
-				find(l, n);
-			}
-		}
-		else{
-			if(temp->person->last < l){
-				if(temp->right == NULL){
-			    temp->right;
-				temp->right->parent = temp;
-				}
-				else{
-					find(l, n);
-				}
-
-			}
-			if(temp->person->last > l){
-				temp = temp->right;
-				find(l,n);
-			}
-		}
-		*/
-
 	}
 
 }
@@ -209,11 +183,21 @@ void bst::printTreePost(bstNode *n){//Recursive version which prints out the nod
 	n->printNode();
 }
 
+//finds the minimum value of the node
+bstNode *bst::minValNode(bstNode *n){
+	bstNode *temp = n;
+	while(temp && temp->left != NULL){
+		temp = temp->left;
+	}
+	return temp;
+}
+
 //Removes the node off the tree, if the root is NULL, NULL will be returned.
 bstNode *bst::remove(string l, string f){
 	bstNode *temp = new bstNode();
+	bool flag = true;
 	if(root == NULL){
-		return NULL;
+		temp = NULL;
 	}
 	else if(root->person->last > l){
 		root->left = remove(l,f);
@@ -228,30 +212,13 @@ bstNode *bst::remove(string l, string f){
 			temp = root;
 		}
 		//Case one: node has no children
-		if(root->left == NULL and root->right == NULL){
-			temp = root;
-			delete root;
-			setHeight(temp);
-		}
+
+			removeNoKids(temp);
 		//Case two: node has one child
-		else if(root->left == NULL){
-			temp = root->right;
-			delete root;
-			setHeight(temp);
-		}
-		else if(root->right == NULL){
-			temp = root->left;
-			delete root;
-			setHeight(temp);
-		}
+			removeOneKid(temp, flag);
 		//Case three: node has two children
-		else{
-			/*root->person->last = temp;
-			temp += root->person->first;
-			*/
-			root->right = remove(root->person->last,root->person->first);
-			setHeight(temp);
-		}
+			temp = minValNode(root->right);
+			root->right = remove(root->right->person->last, root->right->person->first);
 	}
 	return temp;
 }
