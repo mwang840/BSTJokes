@@ -194,64 +194,71 @@ bstNode *bst::minValNode(bstNode *n){
 
 //Removes the node off the tree, if the root is NULL, NULL will be returned.
 bstNode *bst::remove(string l, string f){
-	bstNode *temp = new bstNode();
-	bstNode *code = temp;
-	bool flag = true;
-	if(root == NULL){
-		temp = NULL;
+	bstNode *temp = find(l, f);
+	    if (temp->left == NULL && temp->right == NULL) {
+	        return removeNoKids(temp);
+	    }
+	    else if (temp->left != NULL && temp->right == NULL) {
+	        return removeOneKid(temp, true);
+	    }
+	    else if (temp->right != NULL && temp->left == NULL) {
+	        return removeOneKid(temp, false);
+	    }
+	    else {
+	        bstNode *n = temp->right;
+	        while (n->left != NULL) { //finding the rightmost node of the left child
+	            n = n->left;
+	        }
+	        if (n->right != NULL) { //Else removes the rightmost node of the right child
+	            removeOneKid(n, false);
+	        }
+	        else{
+	            removeNoKids(n);
+	        }
+	        n->parent = temp->parent;
+	        temp->parent = n;
+	        n->left = temp->left;
+	        n->right = temp;
+	        temp->left = NULL;
+	        return removeOneKid(temp, false);
+	    }
+	    return NULL;
 	}
-	else if(root->person->last > l){
-		root->left = remove(l,f);
-		setHeight(temp);
-	}
-	else if(root->person->last < l){
-		root->right = remove(l,f);
-		setHeight(temp);
-	}
-	else if(root->person->last == l){
-		if(root->person->first == f){
-			temp = root;
-		}
-		//Case one: node has no children
-			removeNoKids(temp);
-		//Case two: node has one child
-			removeOneKid(temp, flag);
-		//Case three: node has two children
-			code->person = temp->person;
-			temp = minValNode(root->right);
-			root->right = remove(root->right->person->last, root->right->person->first);
-	}
-	return temp;
-}
 
 //Removes the node that only has no children. Return the node which is being removed if the root is NULL, NULL will be returned.
  bstNode *bst::removeNoKids(bstNode *tmp){
-	 bstNode *temp = tmp;
-	  delete tmp;
-	  setHeight(temp->parent);
-	  return temp;
+	 bstNode *n = tmp;
+	   if(tmp->parent->left == tmp){
+	     tmp->parent->left = NULL;
+	   }
+	   else{
+	     tmp->parent->right = NULL;
+	   }
+	   delete tmp;
+	   setHeight(n->parent);
+	   return n;
  }
 
 //Removes the node that only has one child. Return the node which is being removed if the root is NULL, NULL will be returned.
-bstNode *bst::removeOneKid(bstNode *tmp, bool leftFlag){
-	bstNode  *temp = tmp;
-	//Base case here
-	if(tmp == NULL){
-		return tmp;
-	}
-	if(tmp->left == NULL){
-		temp = tmp;
-		leftFlag = false;
-		delete tmp;
-	}
-	else if(tmp->right == NULL){
-		temp = tmp;
-		leftFlag = true;
-		delete tmp;
-	}
-	tmp->right = removeOneKid(tmp->right, leftFlag);
-	return temp;
-}
+ bstNode *bst::removeOneKid(bstNode *tmp, bool leftFlag) {
+   bstNode *n = new bstNode();
+   if(leftFlag){
+     n = tmp->left;
+     tmp->parent->left = n;
+     tmp->left->parent = tmp->parent;
+     n = tmp;
+     delete tmp;
+   }
+   else{
+     n = tmp->right;
+     tmp->parent->right = n;
+     tmp->right->parent = tmp->parent;
+     n = tmp;
+     delete tmp;
+   }
+   setHeight(n->parent);
+   return n;
+ }
 
 //Sets the height of the nodes in the tree. This one is a hard one since it has to account for the cases recursively.
 void bst::setHeight(bstNode *n){
